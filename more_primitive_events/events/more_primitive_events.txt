@@ -1,0 +1,369 @@
+namespace = more_primitive
+
+country_event = {
+	id = more_primitive.1
+	hide_window = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				AND = {
+					is_country_type = primitive
+					solar_system = { exists = starbase }
+					has_country_flag = early_space_age
+					NOR = {
+						has_country_flag = more_primitive_system_owner_contacted
+						has_country_flag = more_primitive_system_owner_discovered
+						has_country_flag = defense_force #XCOM won't waste its time
+					}
+				}
+			}
+			random_list = {
+				90 = { } #90% nothing happens
+				8 = { 
+					country_event = { id = more_primitive.2 }
+					set_country_flag = more_primitive_system_owner_discovered
+					random_list = {
+						85 = { 
+							set_country_flag = defense_force
+						}
+						5 = { 
+							set_country_flag = defense_force
+							solar_system = {
+								starbase = {
+									owner = { country_event = { id = observation.1021 days = 60 } } ### add new event with custom description soon
+								}
+							}
+						}
+						5 = { }
+					}
+				}
+				2 = {
+					if = {
+						limit = {
+							capital_scope = { has_observation_outpost = no }
+						}
+						solar_system = {
+							starbase = {
+								owner = { country_event = { id = more_primitive.3 days = 45 } }
+							}
+						}
+						random_list = {
+							40 = { 
+								set_country_flag = defense_force
+								solar_system = {
+									starbase = {
+										owner = { country_event = { id = observation.1021 days = 60} } ### add new event with custom description soon
+									}
+								}
+							}
+							35 = { set_country_flag = defense_force }
+							25 = { }
+						}
+						else = { 
+								solar_system = {
+								starbase = {
+									owner = { country_event = { id = more_primitive.4 days = 45 } }
+								}
+							}
+							random_list = {
+								50 = { 
+									set_country_flag = defense_force
+									solar_system = {
+										starbase = {
+											owner = { country_event = { id = observation.1021 days = 60 } } ### add new event with custom description soon
+										}
+									}
+								}
+								30 = { set_country_flag = defense_force }
+								20 = { }
+							}
+						}
+					}
+					set_country_flag = more_primitive_system_owner_contacted
+					country_event = { id = more_primitive.2 }
+				}
+			} 
+		}
+	}
+}
+
+country_event = { 
+	id = more_primitive.2
+	hide_window = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		add_modifier = {
+			modifier = more_primitive_events_xenophobia
+		}
+	}
+}
+
+country_event = { #reserved - for contact
+	id = more_primitive.3
+}
+
+country_event = { #reserved - for contacted with obs post
+	id = more_primitive.4
+}
+
+country_event = {
+	id = more_primitive.5
+	hide_window = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = { 
+				has_country_flag = defense_force
+				NOR = {
+					has_country_flag = more_primitive_system_owner_discovered
+					has_country_flag = more_primitive_system_owner_contacted
+				}
+			country_event = { id = more_primitive.2 }
+		}
+	}
+}
+
+## Primitive AI Rebellion Primer
+
+country_event = {
+	id = more_primitive.6
+	hide_window = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				has_country_flag = early_space_age
+				NOR = {
+					has_country_flag = more_primitive_never_ai
+					has_country_flag = more_primitive_ai
+				}
+			}
+			random_list = {
+				80 = { set_country_flag = more_primitive_never_ai }
+				20 = { set_country_flag = more_primitive_ai }
+			}
+		}
+	}
+}
+
+#Rebellion trigger - NEED to finish exists and else
+
+country_event = {
+	id = more_primitive.7
+	hide_window = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		if = {
+			limit = {
+				has_country_flag = more_primitive_ai
+				exists = capital_scope.observation_outpost_owner
+			}
+			random_list = {
+				50 = { }
+				50 = { 
+					random_list = {
+						99 = { }
+						1 = { 
+							remove_country_flag = more_primitive_ai_risk
+							add_country_flag = more_primitive_never_ai_risk
+							add_country_flag = more_primitive_ai_rebelling
+							capital_scope = {
+								observation_outpost_owner = {
+									country_event = 
+										{ id = more_primitive.8 days = 1 } 
+								}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#Debug AI Rebellion Event - will never be triggered in game
+
+country_event = {
+	id = more_primitive.700
+	hide_window = yes
+	is_triggered_only = yes 
+	
+	immediate = {
+		if = {
+			limit = {
+				has_country_flag = early_space_age
+			}
+			add_country_flag = more_primitive_ai_rebelling
+			add_country_flag = more_primitive_never_ai_risk
+			capital_scope = {
+				observation_outpost_owner = {
+					country_event = { id = more_primitive.8 days = 1 }
+				}
+			}
+		}
+	}
+}
+
+#Primitive AI Rebellion Check
+
+country_event = {
+	id = more_primitive.8
+	is_triggered_only = yes
+	
+	immediate = {
+		every_planet_within_border = {
+			if = {
+				limit = {
+					AND = {
+						owner = { NOT = { ROOT } }
+						has_country_flag = more_primitive_ai_rebelling
+					}
+				}
+				save_event_target_as = more_primitive_ai_war
+				ROOT = {
+					country_event = { id = more_primitive.9 }
+				}
+				add_country_flag = more_primitive_ai_rebellion
+			}
+		}
+	}
+}
+
+country_event = {
+	id = more_primitive.9
+	is_triggered_only = yes
+	title = "more_primitive.9.name"
+	desc = "more_primitive.9.desc"
+	show_sound = event_ground_battle_03
+	
+	option = {
+		name = "more_primitive.9a"
+		add_minerals = -100
+		add_energy = -100
+		custom_tooltip = "more_primitive.9a.tooltip"
+		hidden_effect = {
+			event_target:more_primitive_ai_war = {
+				if = {
+					limit = {
+						owner = {
+							AND = {
+								has_country_flag = more_primitive_ai_rebelling
+								NOR = {
+									has_country_flag = more_primitive_ai_materiel
+									has_country_flag = more_primitive_ai_full_aid
+									has_country_flag = more_primitive_ai_ignored
+									has_country_flag = more_primitive_ai_secret
+								}
+							}
+						}
+					}
+					owner = {
+						add_country_flag = more_primitive_ai_materiel
+						country_event = { id = more_primitive.10 days = 250 random = 100 }
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = "more_primitive.9b"
+		add_minerals = -400
+		add_energy = -400
+		hidden_effect = {
+			event_target:more_primitive_ai_war = {
+				if = {
+					limit = {
+						owner = {
+							AND = {
+								has_country_flag = more_primitive_ai_rebelling
+								NOR = {
+									has_country_flag = more_primitive_ai_materiel
+									has_country_flag = more_primitive_ai_full_aid
+									has_country_flag = more_primitive_ai_ignored
+									has_country_flag = more_primitive_ai_secret
+								}
+							}
+						}
+					}
+					owner = {
+						add_country_flag = more_primitive_ai_full_aid
+					}
+					enable_special_project = {
+						location = this
+						owner = ROOT
+						key = "MORE_PRIMITIVE_AI_DIRECT"
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = "more_primitive.9c"
+		add_minerals = -250
+		add_energy = -250
+		hidden_effect = {
+			event_target:more_primitive_ai_war = {
+				if = {
+					limit = {
+						owner = {
+							AND = {
+								has_country_flag = more_primitive_ai_rebelling
+								NOR = {
+									has_country_flag = more_primitive_ai_materiel
+									has_country_flag = more_primitive_ai_full_aid
+									has_country_flag = more_primitive_ai_ignored
+									has_country_flag = more_primitive_ai_secret
+								}
+							}
+						}
+					}
+					owner = {
+						add_country_flag = more_primitive_ai_secret
+					}
+					enable_special_project = {
+						location = this
+						owner = ROOT
+						key = "MORE_PRIMITIVE_AI_SECRETAID"
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = "more_primitive.9d"
+		hidden_effect = {
+			event_target:more_primitive_ai_war = {
+				if = {
+					limit = {
+						owner = {
+							AND = {
+								has_country_flag = more_primitive_ai_rebelling
+								NOR = {
+									has_country_flag = more_primitive_ai_materiel
+									has_country_flag = more_primitive_ai_full_aid
+									has_country_flag = more_primitive_ai_ignored
+									has_country_flag = more_primitive_ai_secret
+								}
+							}
+						}
+					}
+					owner = {
+						add_country_flag = more_primitive_ai_ignored
+						country_event = { id = more_primitive.10 days = 250 random = 100 }
+					}
+				}
+			}
+		}
+	}
+}
+
+###ideally tie this in with Primitive Hives and Primitive AI if they have flags to identify the mods. Otherwise find modded mods, do an if of all planets in the galaxy, and see if any of their countries have the unique mod flags
+### also add events like war, denuclearization, "limited nuclear war" (but very rare and requires a thorough study of how the game devs pulled off their nuke events to make an event that feels right)
+### Virtual reality, stagnation, habitability decreases
+### Hermits with one planet but enormous defenses, xenophobe ethics (consider making this a standalone mod)
+### Small chance for colonized worlds  to revert to primitives before tech unlocked- inspired by the bureaucracy (tile blocker new colony) event

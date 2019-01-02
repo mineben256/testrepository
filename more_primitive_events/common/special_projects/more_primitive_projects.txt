@@ -1,0 +1,15 @@
+special_project = {
+	key = "MORE_PRIMITIVE_AI_DIRECT"
+	cost = 0
+	days_to_research = 360
+	tech_department = society_technology
+	picture = 
+	
+	event_scope = ship_event
+	
+	requirements = {
+		shipclass_transport = 1
+	}
+	on_success = {
+		random_list = {
+			

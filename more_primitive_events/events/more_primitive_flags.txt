@@ -1,0 +1,14 @@
+namespace = more_primitive_flags
+
+## This sets a flag to confirm that this mod is active
+
+event = {
+	id = more_primitive_flags.1
+	hide_window = yes
+	fire_only_once = yes
+	is_triggered_only = yes
+	
+	immediate = {
+		set_global_flag = more_primitive_events_active
+	}
+}
